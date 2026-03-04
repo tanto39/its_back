@@ -10,7 +10,7 @@ export class AuthHandler extends BaseHandler {
   async login(req: Request, res: Response) {
     const { login, password } = req.body;
     if (!login || !password) {
-      return this.sendError(res, 'Login and password required', 400);
+      return this.sendError(res, 'Логин и пароль обязательны', 400);
     }
 
     try {
@@ -21,25 +21,25 @@ export class AuthHandler extends BaseHandler {
 
       // В реальном проекте пароль должен сравниваться с хешем (например, bcrypt)
       if (!user || user.password !== password) {
-        return this.sendError(res, 'Invalid credentials', 401);
+        return this.sendError(res, 'Неправильный пароль', 401);
       }
 
       const token = jwt.sign(
-        { login: user.login, role: user.role_name },
+        { login: user.login, role_name: user.role_name },
         process.env.JWT_SECRET || 'secret',
         { expiresIn: '24h' }
       );
 
-      this.sendSuccess(res, { token, user: { login: user.login, role: user.role_name } });
+      this.sendSuccess(res, { token, user: user });
     } catch (error) {
-      this.sendError(res, 'Login failed', 500);
+      this.sendError(res, 'Ошибка авторизации ' + error, 500);
     }
   }
 
   async getMe(req: Request, res: Response) {
     // req.user устанавливается в middleware аутентификации
     const user = (req as any).user;
-    if (!user) return this.sendError(res, 'Not authenticated', 401);
+    if (!user) return this.sendError(res, 'Ошибка авторизации', 401);
     this.sendSuccess(res, user);
   }
 }

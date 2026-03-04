@@ -7,7 +7,7 @@ export class UserHandler extends BaseHandler {
 
   async getAll(req: Request, res: Response) {
     try {
-      const users = await this.repository.find({ relations: ['role'] });
+      const users = await this.repository.find();
       this.sendSuccess(res, users);
     } catch (error) {
       this.sendError(res, 'Failed to fetch users', 500);

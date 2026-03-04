@@ -51,7 +51,7 @@ export class CarHandler extends BaseHandler {
       await this.repository.save(newCar);
       this.sendSuccess(res, newCar, 201);
     } catch (error) {
-      this.sendError(res, "Failed to create car", 500);
+      this.sendError(res, "Ошибка создания: " + error, 500);
     }
   }
 
@@ -61,7 +61,7 @@ export class CarHandler extends BaseHandler {
 
     try {
       const car = await this.repository.findOneBy({ car_id: parseInt(car_id) });
-      if (!car) return this.sendError(res, "Car not found", 404);
+      if (!car) return this.sendError(res, "Автомобиль не найден", 404);
 
       if (name) car.name = name;
       if (reg_number !== undefined) car.reg_number = reg_number;
@@ -79,7 +79,7 @@ export class CarHandler extends BaseHandler {
       await this.repository.save(car);
       this.sendSuccess(res, car);
     } catch (error) {
-      this.sendError(res, "Failed to update car", 500);
+      this.sendError(res, "Ошибка обновления автомобиля " + error, 500);
     }
   }
 
@@ -98,9 +98,9 @@ export class CarHandler extends BaseHandler {
       await unitRepo.delete({ car_id: car.car_id });
       await techRepo.delete({ car_id: car.car_id });
       await this.repository.remove(car);
-      this.sendSuccess(res, { message: "Автомобиль удален" });
+      this.sendSuccess(res, { car_id: car_id });
     } catch (error) {
-      this.sendError(res, "Ошибка удаления автомобиля", 500);
+      this.sendError(res, "Ошибка удаления автомобиля: " + error, 500);
     }
   }
 }

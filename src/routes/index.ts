@@ -22,21 +22,21 @@ const statsHandler = new StatsHandler();
 router.post('/auth/login', (req, res) => authHandler.login(req, res));
 router.get('/auth/me', authenticate, (req, res) => authHandler.getMe(req, res));
 
-// Пользователи (только admin)
-router.get('/users', authenticate, checkAdmin, (req, res) => userHandler.getAll(req, res));
+// Пользователи
+router.get('/users', authenticate, (req, res) => userHandler.getAll(req, res));
 router.post('/users', authenticate, checkAdmin, (req, res) => userHandler.create(req, res));
 router.put('/users/:login', authenticate, checkAdmin, (req, res) => userHandler.update(req, res));
 router.delete('/users/:login', authenticate, checkAdmin, (req, res) => userHandler.delete(req, res));
 
 // Автомобили
-router.get('/cars', (req, res) => carHandler.getAll(req, res));
+router.get('/cars', authenticate, (req, res) => carHandler.getAll(req, res));
 router.get('/cars/:car_id', authenticate, (req, res) => carHandler.getOne(req, res));
 router.post('/cars', authenticate, upload.single('image'), (req, res) => carHandler.create(req, res));
 router.put('/cars/:car_id', authenticate, upload.single('image'), (req, res) => carHandler.update(req, res));
 router.delete('/cars/:car_id', authenticate, (req, res) => carHandler.delete(req, res));
 
 // Узлы
-router.get('/units/:unit_id', authenticate, (req, res) => unitHandler.getOne(req, res));
+router.get('/units/:unit_id', (req, res) => unitHandler.getOne(req, res));
 router.post('/units', authenticate, upload.single('image'), (req, res) => unitHandler.create(req, res));
 router.put('/units/:unit_id', authenticate, upload.single('image'), (req, res) => unitHandler.update(req, res));
 router.delete('/units/:unit_id', authenticate, (req, res) => unitHandler.delete(req, res));
