@@ -33,7 +33,7 @@ export class CarHandler extends BaseHandler {
   }
 
   async create(req: Request, res: Response) {
-    const { name, reg_number, date_tech, date_repair, milage, person_login, info } = req.body;
+    const { name, reg_number, date_tech, date_repair, milage, person, info } = req.body;
     if (!name) return this.sendError(res, "Name is required", 400);
 
     try {
@@ -44,7 +44,7 @@ export class CarHandler extends BaseHandler {
         date_tech: date_tech || null,
         date_repair: date_repair || null,
         milage: milage ? parseInt(milage) : null,
-        person: person_login ? { login: person_login } : null, // устанавливаем связь через объект с логином
+        person: person ? { login: person } : null, // устанавливаем связь через объект с логином
         info,
         image_url,
       });
@@ -57,7 +57,7 @@ export class CarHandler extends BaseHandler {
 
   async update(req: Request, res: Response) {
     const { car_id } = req.params;
-    const { name, reg_number, date_tech, date_repair, milage, person_login, info } = req.body;
+    const { name, reg_number, date_tech, date_repair, milage, person, info } = req.body;
 
     try {
       const car = await this.repository.findOneBy({ car_id: parseInt(car_id) });
@@ -68,8 +68,8 @@ export class CarHandler extends BaseHandler {
       if (date_tech !== undefined) car.date_tech = date_tech;
       if (date_repair !== undefined) car.date_repair = date_repair;
       if (milage !== undefined) car.milage = milage ? parseInt(milage) : null;
-      if (person_login !== undefined) {
-        car.person = person_login ? ({ login: person_login } as User) : null;
+      if (person !== undefined) {
+        car.person = person? ({ login: person } as User) : null;
       }
       if (info !== undefined) car.info = info;
       if (req.file) {
