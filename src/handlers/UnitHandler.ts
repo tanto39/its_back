@@ -14,16 +14,16 @@ export class UnitHandler extends BaseHandler {
         where: { unit_id: parseInt(unit_id) },
         relations: ['car']
       });
-      if (!unit) return this.sendError(res, 'Unit not found', 404);
+      if (!unit) return this.sendError(res, 'Не найдено', 404);
       this.sendSuccess(res, unit);
     } catch (error) {
-      this.sendError(res, 'Failed to fetch unit', 500);
+      this.sendError(res, 'Ошибка получения ' + error, 500);
     }
   }
 
   async create(req: Request, res: Response) {
     const { name, car_id, date_repair, its, info } = req.body;
-    if (!name || !car_id) return this.sendError(res, 'Name and car_id are required', 400);
+    if (!name || !car_id) return this.sendError(res, 'Название и автомобиль обязательны', 400);
 
     try {
       const image_url = req.file ? '/images/' + req.file.filename : null;
@@ -39,7 +39,7 @@ export class UnitHandler extends BaseHandler {
       await this.recalcCarITS(newUnit.car_id);
       this.sendSuccess(res, newUnit, 201);
     } catch (error) {
-      this.sendError(res, 'Failed to create unit', 500);
+      this.sendError(res, 'Ошибка создания ' + error, 500);
     }
   }
 
@@ -49,7 +49,7 @@ export class UnitHandler extends BaseHandler {
 
     try {
       const unit = await this.repository.findOneBy({ unit_id: parseInt(unit_id) });
-      if (!unit) return this.sendError(res, 'Unit not found', 404);
+      if (!unit) return this.sendError(res, 'Не найдено', 404);
 
       if (name) unit.name = name;
       if (date_repair !== undefined) unit.date_repair = date_repair;
@@ -63,7 +63,7 @@ export class UnitHandler extends BaseHandler {
       await this.recalcCarITS(unit.car_id);
       this.sendSuccess(res, unit);
     } catch (error) {
-      this.sendError(res, 'Failed to update unit', 500);
+      this.sendError(res, 'Ошибка обновления ' + error, 500);
     }
   }
 
@@ -71,13 +71,13 @@ export class UnitHandler extends BaseHandler {
     const { unit_id } = req.params;
     try {
       const unit = await this.repository.findOneBy({ unit_id: parseInt(unit_id) });
-      if (!unit) return this.sendError(res, 'Unit not found', 404);
+      if (!unit) return this.sendError(res, 'Единица не найдена', 404);
       const carId = unit.car_id;
       await this.repository.remove(unit);
       await this.recalcCarITS(carId);
-      this.sendSuccess(res, { message: 'Unit deleted' });
+      this.sendSuccess(res, { unit_id: unit_id });
     } catch (error) {
-      this.sendError(res, 'Failed to delete unit', 500);
+      this.sendError(res, 'Ошибка удаления ' + error, 500);
     }
   }
 

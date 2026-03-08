@@ -49,7 +49,13 @@ export class CarHandler extends BaseHandler {
         image_url,
       });
       await this.repository.save(newCar);
-      this.sendSuccess(res, newCar, 201);
+
+      const car = await this.repository.findOne({
+        where: { car_id: parseInt(newCar.car_id) },
+        relations: ["person", "units"],
+      });
+      if (!car) return this.sendError(res, "Автомобиль не найден", 404);
+      this.sendSuccess(res, car, 201);
     } catch (error) {
       this.sendError(res, "Ошибка создания: " + error, 500);
     }
@@ -60,7 +66,10 @@ export class CarHandler extends BaseHandler {
     const { name, reg_number, date_tech, date_repair, milage, person, info } = req.body;
 
     try {
-      const car = await this.repository.findOneBy({ car_id: parseInt(car_id) });
+      const car = await this.repository.findOne({
+        where: { car_id: parseInt(car_id) },
+        relations: ["person", "units"],
+      });
       if (!car) return this.sendError(res, "Автомобиль не найден", 404);
 
       if (name) car.name = name;
