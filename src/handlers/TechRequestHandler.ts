@@ -1,16 +1,19 @@
-import { Request, Response } from 'express';
-import { TechRequest } from '../entities/TechRequest';
-import { BaseHandler } from './BaseHandler';
+import { Request, Response } from "express";
+import { TechRequest } from "../entities/TechRequest";
+import { BaseHandler } from "./BaseHandler";
+import { User } from "../entities/User";
 
 export class TechRequestHandler extends BaseHandler {
-  protected getEntity() { return TechRequest; }
+  protected getEntity() {
+    return TechRequest;
+  }
 
   async getAll(req: Request, res: Response) {
     try {
-      const requests = await this.repository.find({ relations: ['car', 'person', 'requestType'] });
+      const requests = await this.repository.find({ relations: ["car", "person", "requestType"] });
       this.sendSuccess(res, requests);
     } catch (error) {
-      this.sendError(res, 'Failed to fetch requests', 500);
+      this.sendError(res, "Ошибка выборки" + error, 500);
     }
   }
 
@@ -19,51 +22,63 @@ export class TechRequestHandler extends BaseHandler {
     try {
       const request = await this.repository.findOne({
         where: { request_id: parseInt(request_id) },
-        relations: ['car', 'person', 'requestType']
+        relations: ["car", "person", "requestType"],
       });
-      if (!request) return this.sendError(res, 'Request not found', 404);
+      if (!request) return this.sendError(res, "Заявка не найдена", 404);
       this.sendSuccess(res, request);
     } catch (error) {
-      this.sendError(res, 'Failed to fetch request', 500);
+      this.sendError(res, "Ошибка выборки" + error, 500);
     }
   }
 
   async create(req: Request, res: Response) {
-    const { request_type, car_id, date_repair, person_login, info } = req.body;
-    if (!request_type || !car_id) return this.sendError(res, 'Request type and car_id are required', 400);
+    const { request_type, car_id, date_repair, person, info } = req.body;
+    if (!request_type || !car_id) return this.sendError(res, "Тип и автомобиль обязательны", 400);
 
     try {
       const newRequest = this.repository.create({
         request_type,
         car_id: parseInt(car_id),
         date_repair: date_repair || null,
-        person_login: person_login || null,
-        info
+        person: person || null,
+        info,
       });
       await this.repository.save(newRequest);
-      this.sendSuccess(res, newRequest, 201);
+
+      const request = await this.repository.findOne({
+        where: { request_id: parseInt(newRequest.request_id) },
+        relations: ["car", "person", "requestType"],
+      });
+      if (!request) return this.sendError(res, "Заявка не найдена", 404);
+
+      console.log(request);
+
+      this.sendSuccess(res, request, 201);
     } catch (error) {
-      this.sendError(res, 'Failed to create request', 500);
+      this.sendError(res, "Ошибка создания " + error, 500);
     }
   }
 
   async update(req: Request, res: Response) {
     const { request_id } = req.params;
-    const { request_type, date_repair, person_login, info } = req.body;
+    const { request_type, date_repair, person, info, car_id } = req.body;
 
     try {
       const request = await this.repository.findOneBy({ request_id: parseInt(request_id) });
-      if (!request) return this.sendError(res, 'Request not found', 404);
+      if (!request) return this.sendError(res, "Заявка не найдена", 404);
 
       if (request_type) request.request_type = request_type;
       if (date_repair !== undefined) request.date_repair = date_repair;
-      if (person_login !== undefined) request.person_login = person_login;
+      if (person !== undefined) {
+        request.person = person ? ({ login: person } as User) : null;
+      }
+      if (car_id !== undefined) request.car_id = car_id;
       if (info !== undefined) request.info = info;
 
       await this.repository.save(request);
       this.sendSuccess(res, request);
     } catch (error) {
-      this.sendError(res, 'Failed to update request', 500);
+      this.sendError(res, "Ошибка обновления " + error, 500);
     }
   }
 
@@ -71,11 +86,11 @@ export class TechRequestHandler extends BaseHandler {
     const { request_id } = req.params;
     try {
       const request = await this.repository.findOneBy({ request_id: parseInt(request_id) });
-      if (!request) return this.sendError(res, 'Request not found', 404);
+      if (!request) return this.sendError(res, "Заявка не найдена", 404);
       await this.repository.remove(request);
-      this.sendSuccess(res, { message: 'Request deleted' });
+      this.sendSuccess(res, { request_id: request_id });
     } catch (error) {
-      this.sendError(res, 'Failed to delete request', 500);
+      this.sendError(res, "Ошибка удаления " + error, 500);
     }
   }
 }

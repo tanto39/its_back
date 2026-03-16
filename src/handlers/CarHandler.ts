@@ -78,7 +78,7 @@ export class CarHandler extends BaseHandler {
       if (date_repair !== undefined) car.date_repair = date_repair;
       if (milage !== undefined) car.milage = milage ? parseInt(milage) : null;
       if (person !== undefined) {
-        car.person = person? ({ login: person } as User) : null;
+        car.person = person ? ({ login: person } as User) : null;
       }
       if (info !== undefined) car.info = info;
       if (req.file) {
@@ -101,7 +101,6 @@ export class CarHandler extends BaseHandler {
       });
       if (!car) return this.sendError(res, "Автомобиль не найден", 404);
 
-      // Каскадное удаление (можно настроить в БД, но для надёжности удалим связанные сущности вручную)
       const unitRepo = AppDataSource.getRepository("Unit");
       const techRepo = AppDataSource.getRepository("TechRequest");
       await unitRepo.delete({ car_id: car.car_id });

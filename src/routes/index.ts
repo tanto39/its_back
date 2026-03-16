@@ -36,7 +36,7 @@ router.put('/cars/:car_id', authenticate, upload.single('image'), (req, res) => 
 router.delete('/cars/:car_id', authenticate, (req, res) => carHandler.delete(req, res));
 
 // Узлы
-router.get('/units/:unit_id', (req, res) => unitHandler.getOne(req, res));
+router.get('/units/:unit_id', authenticate, (req, res) => unitHandler.getOne(req, res));
 router.post('/units', authenticate, upload.single('image'), (req, res) => unitHandler.create(req, res));
 router.put('/units/:unit_id', authenticate, upload.single('image'), (req, res) => unitHandler.update(req, res));
 router.delete('/units/:unit_id', authenticate, (req, res) => unitHandler.delete(req, res));
