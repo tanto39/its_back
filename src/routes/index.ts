@@ -24,6 +24,7 @@ router.get('/auth/me', authenticate, (req, res) => authHandler.getMe(req, res));
 
 // Пользователи
 router.get('/users', authenticate, (req, res) => userHandler.getAll(req, res));
+router.get('/users/:login', authenticate, (req, res) => userHandler.getOne(req, res));
 router.post('/users', authenticate, checkAdmin, (req, res) => userHandler.create(req, res));
 router.put('/users/:login', authenticate, checkAdmin, (req, res) => userHandler.update(req, res));
 router.delete('/users/:login', authenticate, checkAdmin, (req, res) => userHandler.delete(req, res));
