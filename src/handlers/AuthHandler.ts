@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { AppDataSource } from '../data-source';
 import { User } from '../entities/User';
 import { BaseHandler } from './BaseHandler';
@@ -19,9 +20,14 @@ export class AuthHandler extends BaseHandler {
         relations: ['role']
       });
 
-      // В реальном проекте пароль должен сравниваться с хешем (например, bcrypt)
-      if (!user || user.password !== password) {
-        return this.sendError(res, 'Неправильный пароль', 401);
+      if (!user) {
+        return this.sendError(res, 'Пользователь не найден', 401);
+      }
+
+      // Сравнение хешированного пароля
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return this.sendError(res, 'Неправильный логин или пароль', 401);
       }
 
       const token = jwt.sign(

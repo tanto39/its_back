@@ -10,7 +10,7 @@ export class User {
   login: string;
 
   @Exclude() // исключаем при сериализации
-  @Column({ length: 32 })
+  @Column({ length: 255 })
   password: string; // в реальном проекте хранить хеш!
 
   @Column({ name: 'second_name', length: 30, nullable: true })
