@@ -21,6 +21,7 @@ CREATE DATABASE "its_auto"
 Выполнить скрипт для создания таблиц tables.sql в pgadmin (через query tool) либо в sql shell. 
 Начальный логин/пароль администратора: admin_01 Pa$$w0rd1
 
+Измените значения логина/пароля для своего пользователя postgres в .env
 
 Запуск в продуктовом режиме:
 npm run start
