@@ -5,7 +5,7 @@
 3) Установить базу данных PostgreSQL если ее нет: https://www.postgresql.org/download/
 
     В утилите SQL Shell выполнить команду по созданию БД its_auto:
-    CREATE DATABASE "its_auto"
+    `CREATE DATABASE "its_auto"
         WITH
         OWNER = postgres
         ENCODING = 'UTF8'
@@ -14,7 +14,7 @@
         LOCALE_PROVIDER = 'libc'
         TABLESPACE = pg_default
         CONNECTION LIMIT = -1
-        IS_TEMPLATE = False;
+        IS_TEMPLATE = False;`
 
     либо создать БД its_auto вручную в pgadmin.
 
