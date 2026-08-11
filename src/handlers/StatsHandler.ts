@@ -1,12 +1,14 @@
-import { Request, Response } from 'express';
-import { AppDataSource } from '../data-source';
-import { Car } from '../entities/Car';
-import { TechRequest } from '../entities/TechRequest';
-import { BaseHandler } from './BaseHandler';
-import { Between } from 'typeorm';
+import { Request, Response } from "express";
+import { AppDataSource } from "../data-source";
+import { Car } from "../entities/Car";
+import { TechRequest } from "../entities/TechRequest";
+import { BaseHandler } from "./BaseHandler";
+import { Between } from "typeorm";
 
 export class StatsHandler extends BaseHandler {
-  protected getEntity() { return Car; } // не используется, но требуется абстрактным классом
+  protected getEntity() {
+    return Car;
+  }
 
   async getStats(req: Request, res: Response) {
     try {
@@ -26,7 +28,12 @@ export class StatsHandler extends BaseHandler {
       const count30_69 = await carRepo.count({ where: { its: Between(30, 69) } });
       const count0_29 = await carRepo.count({ where: { its: Between(0, 29) } });
 
-      const totalRequests = await requestRepo.count();
+      //const totalRequests = await requestRepo.count();
+
+      const totalRequests = await requestRepo
+        .createQueryBuilder('request')
+        .where('request.status IN (:...statuses)', { statuses: ['new', 'process'] })
+        .getCount();
 
       this.sendSuccess(res, {
         avgIts,
@@ -34,10 +41,10 @@ export class StatsHandler extends BaseHandler {
         count70_100,
         count30_69,
         count0_29,
-        totalRequests
+        totalRequests,
       });
     } catch (error) {
-      this.sendError(res, 'Failed to get stats', 500);
+      this.sendError(res, "Failed to get stats", 500);
     }
   }
 }
