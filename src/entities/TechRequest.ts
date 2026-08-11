@@ -29,6 +29,9 @@ export class TechRequest {
   @JoinColumn({ name: 'person' })
   person: User;
 
+  @Column({ name: 'status' })
+  status: string;
+
   @Column({ length: 1024, nullable: true })
   info: string;
 }

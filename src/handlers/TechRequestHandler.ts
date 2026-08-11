@@ -32,7 +32,7 @@ export class TechRequestHandler extends BaseHandler {
   }
 
   async create(req: Request, res: Response) {
-    const { request_type, car_id, date_repair, person, info } = req.body;
+    const { request_type, car_id, date_repair, person, status, info } = req.body;
     if (!request_type || !car_id) return this.sendError(res, "Тип и автомобиль обязательны", 400);
 
     try {
@@ -41,6 +41,7 @@ export class TechRequestHandler extends BaseHandler {
         car_id: parseInt(car_id),
         date_repair: date_repair || null,
         person: person || null,
+        status: status || 'new',
         info,
       });
       await this.repository.save(newRequest);
@@ -61,7 +62,7 @@ export class TechRequestHandler extends BaseHandler {
 
   async update(req: Request, res: Response) {
     const { request_id } = req.params;
-    const { request_type, date_repair, person, info, car_id } = req.body;
+    const { request_type, date_repair, person, info, status, car_id } = req.body;
 
     try {
       const request = await this.repository.findOneBy({ request_id: parseInt(request_id) });
@@ -74,6 +75,7 @@ export class TechRequestHandler extends BaseHandler {
       }
       if (car_id !== undefined) request.car_id = car_id;
       if (info !== undefined) request.info = info;
+      if (status !== undefined) request.status = status;
 
       await this.repository.save(request);
       this.sendSuccess(res, request);

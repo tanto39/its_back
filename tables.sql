@@ -57,12 +57,12 @@ CREATE TABLE units
 );
 
 INSERT INTO units (name, car_id, date_repair, its, info, image_url) VALUES 
-('ДВС КАМАЗ 740.735-400', 1, '2026-02-07', 100, 'Провести измерение компрессии', '/images/kamaz-dv.jpg' ),
-('Коробка передач ZF 12TX2825TO', 1, '2026-02-07', 100, 'Провести регулировку гидротрансформатора', '/images/kamaz-kpp.jpg' ),
-('Тормозной механизм колес', 1, '2026-02-07', 100, 'Провести расточку тормозных колодок через месяц', '/images/kamaz-tormoz.jpg' ),
-('ДВС КАМАЗ 740.735-400', 2, '2026-02-07', 100, 'Провести измерение компрессии', '/images/kamaz-dv.jpg' ),
-('Коробка передач ZF 12TX2825TO', 2, '2026-02-07', 100, 'Провести регулировку гидротрансформатора', '/images/kamaz-kpp.jpg' ),
-('Тормозной механизм колес', 2, '2026-02-07', 100, 'Провести расточку тормозных колодок через месяц', '/images/kamaz-tormoz.jpg' );
+('ДВС КАМАЗ 740.735-400', 1, '2026-02-07', 80, 'Провести измерение компрессии', '/images/kamaz-dv.jpg' ),
+('Коробка передач ZF 12TX2825TO', 1, '2026-02-07', 60, 'Провести регулировку гидротрансформатора', '/images/kamaz-kpp.jpg' ),
+('Тормозной механизм колес', 1, '2026-02-07', 70, 'Провести расточку тормозных колодок через месяц', '/images/kamaz-tormoz.jpg' ),
+('ДВС КАМАЗ 740.735-400', 2, '2026-02-07', 80, 'Провести измерение компрессии', '/images/kamaz-dv.jpg' ),
+('Коробка передач ZF 12TX2825TO', 2, '2026-02-07', 60, 'Провести регулировку гидротрансформатора', '/images/kamaz-kpp.jpg' ),
+('Тормозной механизм колес', 2, '2026-02-07', 70, 'Провести расточку тормозных колодок через месяц', '/images/kamaz-tormoz.jpg' );
 
 CREATE TABLE tech_request_types
 (
@@ -73,6 +73,8 @@ CREATE TABLE tech_request_types
 INSERT INTO tech_request_types (request_type, name) 
 VALUES ('to', 'ТО'),('repair', 'Ремонт');
 
+CREATE TYPE request_status AS ENUM ('new', 'process', 'done');
+
 CREATE TABLE tech_requests
 (
 	request_id serial not null CONSTRAINT PK_request PRIMARY KEY,
@@ -80,10 +82,11 @@ CREATE TABLE tech_requests
 	car_id INT not null REFERENCES cars (car_id),
 	date_repair DATE null,
 	person VARCHAR(32) null REFERENCES users (login),
+	status request_status NOT NULL DEFAULT 'new',
 	info VARCHAR (1024) null
 );
 
-INSERT INTO tech_requests (request_type, car_id, date_repair, person, info) VALUES 
-('to', 1, '2026-02-23', 'bazarov_av', 'Отрегулировать гидротрансформатор коробки передач'),
-('repair', 2, '2026-02-23', 'bazarov_av', 'Заменить гидротрансформатор коробки передач');
+INSERT INTO tech_requests (request_type, car_id, date_repair, person, status, info) VALUES 
+('to', 1, '2026-02-23', 'bazarov_av', 'new', 'Отрегулировать гидротрансформатор коробки передач'),
+('repair', 2, '2026-02-23', 'bazarov_av', 'new', 'Заменить гидротрансформатор коробки передач');
 
